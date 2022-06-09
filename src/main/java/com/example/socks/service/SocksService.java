@@ -3,6 +3,8 @@ package com.example.socks.service;
 import com.example.socks.model.Socks;
 import com.example.socks.repository.SocksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,19 +19,23 @@ public class SocksService {
         this.socksRepository = socksRepository;
     }
 
-    public List<Socks> getAllSocks() {
-        return socksRepository.findAll();
+    public ResponseEntity<List<Socks>> getAllSocks() {
+        List<Socks> socks = socksRepository.findAll();
+        if (socks == null) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(socks, HttpStatus.OK);
     }
 
-    public String addSocks(Socks socks) {
+    public ResponseEntity addSocks(Socks socks) {
         Socks sock = socksRepository.findByColorAndCottonPart(socks.getColor(), socks.getCottonPart());
         if (sock != null) {
             sock.setQuantity(sock.getQuantity() + socks.getQuantity());
             socksRepository.saveAndFlush(sock);
-            return "+";
+            return new ResponseEntity<>("Удалось добавить приход", HttpStatus.OK);
         }
         socksRepository.save(socks);
-        return "+";
+        return new ResponseEntity<>("Удалось добавить приход", HttpStatus.OK);
     }
 
     public String removeSocks(Socks socks) {
