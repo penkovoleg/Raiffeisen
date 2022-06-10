@@ -1,7 +1,6 @@
 package com.example.socks.controller;
 
 import com.example.socks.model.Socks;
-import com.example.socks.repository.SocksRepository;
 import com.example.socks.service.SocksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,7 @@ import java.util.List;
 @RequestMapping("/api/socks")
 public class SocksController {
 
-    private SocksService socksService;
+    private final SocksService socksService;
 
     @Autowired
     public SocksController(SocksService socksService) {
@@ -27,22 +26,22 @@ public class SocksController {
     }
 
     @GetMapping
-    public int getSocks(@RequestParam("color") String color,
-                           @RequestParam("operation") String operation,
-                           @RequestParam("cottonPart") int cottonPart) {
-        int count = 0;
+    public ResponseEntity<String> getSocks(@RequestParam("color") String color,
+                                           @RequestParam("operation") String operation,
+                                           @RequestParam("cottonPart") int cottonPart) {
         if (color == null && cottonPart >= 0 || cottonPart <= 100) {
-            count = socksService.getSocksOnRequest(color, operation, cottonPart);
+            return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
+                    HttpStatus.BAD_REQUEST);
         }
-            return count;
+        return socksService.getSocksOnRequest(color, operation, cottonPart);
     }
 
     @PostMapping("/income")
-    public ResponseEntity addSocks(@RequestBody Socks socks) {
+    public ResponseEntity<String> addSocks(@RequestBody Socks socks) {
         if (socks.getColor() == null
-                || socks.getCottonPart() < 0
-                || socks.getCottonPart() > 100
-                || socks.getQuantity() < 0) {
+                || socks.getCottonPart() <= 0
+                || socks.getCottonPart() >= 100
+                || socks.getQuantity() <= 0) {
             return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
                     HttpStatus.BAD_REQUEST);
         }
@@ -50,13 +49,24 @@ public class SocksController {
     }
 
     @PostMapping("/outcome")
-    public String deleteSocks(@RequestBody Socks socks) {
+    public ResponseEntity<String> deleteSocks(@RequestBody Socks socks) {
         if (socks.getColor() == null
-                || socks.getCottonPart() < 0
-                || socks.getCottonPart() > 100
-                || socks.getQuantity() < 0) {
-            return "Error added socks - bad request!";
+                || socks.getCottonPart() <= 0
+                || socks.getCottonPart() >= 100
+                || socks.getQuantity() <= 0) {
+            return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
+                    HttpStatus.BAD_REQUEST);
         }
         return socksService.removeSocks(socks);
+    }
+
+    private ResponseEntity<String> dataValidation(final String color,
+                                                  final String operation,
+                                                  final int cottonPart) {
+        if (color == null && cottonPart >= 0 || cottonPart <= 100) {
+            return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
+                    HttpStatus.BAD_REQUEST);
+        } else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }
