@@ -29,7 +29,12 @@ public class SocksController {
     public ResponseEntity<String> getSocks(@RequestParam("color") String color,
                                            @RequestParam("operation") String operation,
                                            @RequestParam("cottonPart") int cottonPart) {
-        if (color == null && cottonPart >= 0 || cottonPart <= 100) {
+        if (color == null
+                || (!operation.equals("moreThan")
+                && !operation.equals("lessThan")
+                && !operation.equals("equal"))
+                || cottonPart < 0
+                || cottonPart > 100) {
             return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
                     HttpStatus.BAD_REQUEST);
         }
@@ -39,8 +44,8 @@ public class SocksController {
     @PostMapping("/income")
     public ResponseEntity<String> addSocks(@RequestBody Socks socks) {
         if (socks.getColor() == null
-                || socks.getCottonPart() <= 0
-                || socks.getCottonPart() >= 100
+                || socks.getCottonPart() < 0
+                || socks.getCottonPart() > 100
                 || socks.getQuantity() <= 0) {
             return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
                     HttpStatus.BAD_REQUEST);
@@ -51,8 +56,8 @@ public class SocksController {
     @PostMapping("/outcome")
     public ResponseEntity<String> deleteSocks(@RequestBody Socks socks) {
         if (socks.getColor() == null
-                || socks.getCottonPart() <= 0
-                || socks.getCottonPart() >= 100
+                || socks.getCottonPart() < 0
+                || socks.getCottonPart() > 100
                 || socks.getQuantity() <= 0) {
             return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
                     HttpStatus.BAD_REQUEST);
@@ -60,13 +65,13 @@ public class SocksController {
         return socksService.removeSocks(socks);
     }
 
-    private ResponseEntity<String> dataValidation(final String color,
-                                                  final String operation,
-                                                  final int cottonPart) {
-        if (color == null && cottonPart >= 0 || cottonPart <= 100) {
-            return new ResponseEntity<>("Параметры запроса отсутствуют или имеют некорректный формат!",
-                    HttpStatus.BAD_REQUEST);
-        } else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    private String checkingData(final Socks socks) {
+        if (socks.getColor() == null
+                || socks.getCottonPart() < 0
+                || socks.getCottonPart() > 100
+                || socks.getQuantity() <= 0) {
+           return "Параметры запроса отсутствуют или имеют некорректный формат!";
+        }
+        return null;
     }
 }
