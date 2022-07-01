@@ -4,7 +4,6 @@ import com.example.socks.model.Socks;
 import com.example.socks.service.SocksService;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -29,10 +28,9 @@ public class SocksController {
     }
 
     @GetMapping(params = {"color", "operation", "cottonPart"})
-    public ResponseEntity<Long> getSocks(@RequestParam("color") @NotBlank String color,
-                                         @RequestParam("operation") @NotBlank String operation,
-                                         @RequestParam("cottonPart") @NotNull @Min(0) @Max(100) int cottonPart)
-            throws MethodArgumentNotValidException {
+    public ResponseEntity<String> getSocks(@RequestParam("color") @NotBlank @Size(min = 3, max = 50) String color,
+                                           @RequestParam("operation") @NotBlank String operation,
+                                           @RequestParam("cottonPart") @NotNull @Min(0) @Max(100) int cottonPart) {
 
         return socksService.getSocksOnRequest(color, operation, cottonPart);
     }
@@ -43,7 +41,7 @@ public class SocksController {
     }
 
     @PostMapping("/outcome")
-    public ResponseEntity<String> deleteSocks(@RequestBody @Valid Socks socks) {
+    public ResponseEntity<String> removeSocks(@RequestBody @Valid Socks socks) {
         return socksService.removeSocks(socks);
     }
 }
