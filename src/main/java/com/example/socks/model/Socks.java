@@ -1,6 +1,6 @@
 package com.example.socks.model;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -10,7 +10,8 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "socks")
-@Data
+@NoArgsConstructor @AllArgsConstructor
+@Getter @Setter
 public class Socks {
 
     @Id
