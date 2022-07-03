@@ -30,7 +30,7 @@ public class SocksController {
     @GetMapping(params = {"color", "operation", "cottonPart"})
     public ResponseEntity<String> getSocks(@RequestParam("color") @NotBlank @Size(min = 3, max = 50) String color,
                                            @RequestParam("operation") @NotBlank String operation,
-                                           @RequestParam("cottonPart") @NotNull @Min(0) @Max(100) int cottonPart) {
+                                           @RequestParam("cottonPart") @Min(0) @Max(100) int cottonPart) {
 
         return socksService.getSocksOnRequest(color, operation, cottonPart);
     }
