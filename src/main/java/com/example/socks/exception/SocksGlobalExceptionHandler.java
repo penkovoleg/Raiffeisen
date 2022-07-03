@@ -16,44 +16,59 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class SocksGlobalExceptionHandler {
 
+    private static final String ARGUMENT_NOT_VALID = ": Параметры запроса отсутствуют или имеют некорректный формат!";
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDetails> handlerMethodArgumentNotValidException(
             MethodArgumentNotValidException exception) {
-        ErrorDetails details = createResponse(exception);
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ErrorDetails details = createResponse(exception, httpStatus);
         details.setDetails(exception
                 .getBindingResult()
                 .getAllErrors()
                 .get(0)
                 .getDefaultMessage());
-        return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+        details.setMessage(details.getMessage() + ARGUMENT_NOT_VALID);
+        return new ResponseEntity<>(details, httpStatus);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<ErrorDetails> handlerIllegalArgumentAndNoSuchElementException(RuntimeException exception) {
-        ErrorDetails details = createResponse(exception);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDetails> handlerIllegalArgumentException(RuntimeException exception) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ErrorDetails details = createResponse(exception, httpStatus);
         details.setDetails(exception.getMessage());
-        return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+        details.setMessage(details.getMessage() + ARGUMENT_NOT_VALID);
+        return new ResponseEntity<>(details, httpStatus);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErrorDetails> handlerNoSuchElementException(RuntimeException exception) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        ErrorDetails details = createResponse(exception, httpStatus);
+        details.setDetails(exception.getMessage());
+        return new ResponseEntity<>(details, httpStatus);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDetails> handlerConstraintViolationException(
             ConstraintViolationException exception) {
-        ErrorDetails details = createResponse(exception);
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ErrorDetails details = createResponse(exception, httpStatus);
         details.setDetails(exception.getConstraintViolations()
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList())
                 .get(0));
-        return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+        details.setMessage(details.getMessage() + ARGUMENT_NOT_VALID);
+        return new ResponseEntity<>(details, httpStatus);
     }
 
-    private ErrorDetails createResponse(Exception exception) {
+    private ErrorDetails createResponse(Exception exception, HttpStatus httpStatus) {
         return ErrorDetails.builder()
                 .timestamp(new Date())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(exception.getClass().getSimpleName()
-                        + ": Параметры запроса отсутствуют или имеют некорректный формат!")
+                .status(httpStatus.value())
+                .error(httpStatus.getReasonPhrase())
+                .message(exception.getClass().getSimpleName())
                 .build();
     }
 }
