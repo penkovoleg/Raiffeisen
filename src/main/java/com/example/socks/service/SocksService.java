@@ -28,17 +28,20 @@ public class SocksService {
         return ResponseEntity.ok(socks);
     }
 
-    public ResponseEntity<String> addSocks(Socks socksIncome) {
+    public ResponseEntity<String> addSocks(Socks socksInCome) {
         Socks socksInStore = socksRepository
-                .findByColorAndCottonPart(socksIncome.getColor(), socksIncome.getCottonPart());
+                .findByColorAndCottonPart(socksInCome.getColor(), socksInCome.getCottonPart());
         if (socksInStore != null) {
-            socksIncome.setQuantity(socksInStore.getQuantity() + socksIncome.getQuantity());
+            socksInStore.setQuantity(socksInStore.getQuantity() + socksInCome.getQuantity());
+            socksRepository.save(socksInStore);
+        } else {
+            socksRepository.save(socksInCome);
         }
-        socksRepository.save(socksIncome);
         return ResponseEntity.ok("Удалось добавить приход!");
     }
 
-    public ResponseEntity<String> removeSocks(final Socks socksIncome) {
+    public ResponseEntity<String> removeSocks(final Socks socksIncome)
+            throws NoSuchElementException {
         Socks socksInStore = socksRepository
                 .findByColorAndCottonPart(socksIncome.getColor(), socksIncome.getCottonPart());
         if (socksInStore != null) {
@@ -49,13 +52,13 @@ public class SocksService {
                 socksRepository.delete(socksInStore);
             }
         } else {
-            return new ResponseEntity<>("Носков по данному запросу не найдено!", HttpStatus.OK);
+            throw new NoSuchElementException("Носков по данному запросу не найдено!");
         }
         return new ResponseEntity<>("Отпуск носков со склада выполнен!", HttpStatus.OK);
     }
 
     public ResponseEntity<String> getSocksOnRequest(String color, String operation, int cottonPart)
-            throws IllegalArgumentException {
+            throws IllegalArgumentException, NoSuchElementException {
         List<Socks> socksInStore = new ArrayList<>();
         Operation operations = Operation.enumFromString(operation);
         if (operations.equals(Operation.MORE_THAN)) {
@@ -66,7 +69,7 @@ public class SocksService {
             socksInStore = socksRepository.findByColorAndCottonPartEquals(color, cottonPart);
         }
         if (socksInStore.isEmpty()) {
-            return ResponseEntity.ok("Носков по данному запросу не найдено!");
+            throw new NoSuchElementException("Носков по данному запросу не найдено!");
         }
         return ResponseEntity.ok(String.valueOf(socksInStore
                 .stream()
