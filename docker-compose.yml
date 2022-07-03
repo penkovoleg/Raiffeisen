@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db-connection:
+    image: mysql
+    container_name: db-mysql
+    environment:
+      MYSQL_DATABASE: socks
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3309:3306"
+  application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-java
+    ports:
+      - "8085:8082"
+    restart: always
+    links:
+      - db-connection:db-mysql
