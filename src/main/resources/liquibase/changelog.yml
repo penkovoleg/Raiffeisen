@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: DEV-1
+      author: Penkov Oleg
+      changes:
+        - createTable:
+            tableName: socks
+            remarks: Таблица носков
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: id_pk
+                    nullable: false
+              - column:
+                  name: color
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cotton_part
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
