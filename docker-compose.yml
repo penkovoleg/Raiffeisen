@@ -1,14 +1,14 @@
 version: '3'
 services:
-  db-connection:
-    image: mysql
-    container_name: db-mysql
+  db-postgres:
+    image: postgres
+    container_name: db-postgres
     environment:
-      MYSQL_DATABASE: socks
-      MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: root
+      POSTGRES_DB: socks
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "3309:3306"
+      - "5333:5432"
   application:
     build:
       context: .
@@ -17,5 +17,5 @@ services:
     ports:
       - "8085:8082"
     restart: always
-    links:
-      - db-connection:db-mysql
+    depends_on:
+      - db-postgres
