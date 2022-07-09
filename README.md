@@ -6,7 +6,6 @@
 + POST /api/socks/income   
 + POST /api/socks/outcome   
 + GET /api/socks   
-+ дополнительно был добавлен GET /api/socks/all для просмотра всех доступных носков на складе в формате Json   
    
 **Реализация:**   
 В качестве базы данных используется PostgreSQL, для версионирования используется Liquibase, конфигурационный файл располагается по пути: ***src/main/resources/liquibase/changelog.yml***, схема создаваемой таблицы:   
@@ -16,7 +15,7 @@
 **Ссылка на приложение в Heroku:** **https://raiffeisenbank.herokuapp.com/**   
    
 **Список доступных запросов:**   
-+ `GET` https://raiffeisenbank.herokuapp.com/api/socks/all   
++ `GET` https://raiffeisenbank.herokuapp.com/api/socks/all - дополнительный метод для просмотра всех доступных носков на складе в формате JSON   
 + `POST` https://raiffeisenbank.herokuapp.com/api/socks/income   
 + `POST` https://raiffeisenbank.herokuapp.com/api/socks/outcome   
 + `GET` https://raiffeisenbank.herokuapp.com/api/socks?color=red&operation=moreThan&cottonPart=90   
