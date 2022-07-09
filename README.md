@@ -23,6 +23,7 @@
 **Более подробно с примерами:**   
 + `GET` https://raiffeisenbank.herokuapp.com/api/socks/all - получение списка всех доступных носков в формате JSON   
    
+![image](https://github.com/penkovoleg/Raiffeisen/raw/main/image/ExampleAllRequest.png)   
 + `POST` https://raiffeisenbank.herokuapp.com/api/socks/income - учет прихода носков, пример запроса JSON:  
 ```
 {   
